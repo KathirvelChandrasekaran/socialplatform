@@ -70,7 +70,7 @@ exports.signup = (req, res) => {
         });
       } else {
         return res.status(500).json({
-          error: err.code,
+          message: "Something went wrong",
         });
       }
     });
@@ -94,15 +94,9 @@ exports.login = (req, res) => {
       return res.json({ token });
     })
     .catch((err) => {
-      if (err.code === "auth/wrong-password") {
-        return res.status(400).json({
-          general: "Wrong password!!!",
-        });
-      } else {
-        return res.status(500).json({
-          error: err.code,
-        });
-      }
+      return res.status(500).json({
+        error: err.code,
+      });
     });
 };
 
