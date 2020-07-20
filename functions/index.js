@@ -14,6 +14,8 @@ const {
   getAuthenticatedUser,
   addUserDetails,
   uploadImage,
+  getUserDetails,
+  markNotificationsRead,
 } = require("./handlers/users");
 const { db } = require("./utils/admin");
 const express = require("express");
@@ -35,11 +37,13 @@ app.post("/login", login);
 app.post("/user/image", FBAuth, uploadImage);
 app.post("/user", FBAuth, addUserDetails);
 app.get("/user", FBAuth, getAuthenticatedUser);
+app.get("/user/:handle", getUserDetails);
+// app.post("/notifications", FBAuth, markNotificationsRead);
 
 exports.api = functions.https.onRequest(app);
 
-exports.createNotificationOnLike = functions
-  .firestore.document("likes/{id}")
+exports.createNotificationOnLike = functions.firestore
+  .document("likes/{id}")
   .onCreate((snapshot) => {
     return db
       .doc(`/screams/${snapshot.data().screamId}`)
@@ -61,8 +65,8 @@ exports.createNotificationOnLike = functions
       })
       .catch((err) => console.error(err));
   });
-exports.deleteNotificationOnUnLike = functions
-  .firestore.document("likes/{id}")
+exports.deleteNotificationOnUnLike = functions.firestore
+  .document("likes/{id}")
   .onDelete((snapshot) => {
     return db
       .doc(`/notifications/${snapshot.id}`)
@@ -72,8 +76,8 @@ exports.deleteNotificationOnUnLike = functions
         return;
       });
   });
-exports.createNotificationOnComment = functions
-  .firestore.document("comments/{id}")
+exports.createNotificationOnComment = functions.firestore
+  .document("comments/{id}")
   .onCreate((snapshot) => {
     return db
       .doc(`/screams/${snapshot.data().screamId}`)
